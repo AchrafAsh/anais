@@ -40,6 +40,15 @@ def get_full_df(filename="./data/ais_data/nari_static.csv"):
 
 
 def word_augmentation(df, n):
+    """Perform data augmentation with KeyboardAug, by inserting random keyboard inputs
+
+    Parameters:
+        df (DataFrame): dataset
+        n (int): number of insertions for each row -> change to probability to insert one
+
+    Returns:
+        (DataFrame): the updated dataset with new rows
+    """
     aug = nac.KeyboardAug()
     aug_df = pd.DataFrame(columns=['input', 'target', 'code'])
 
@@ -54,12 +63,19 @@ def word_augmentation(df, n):
 
 
 def get_sentences(filename):
+    """
+    Parameters:
+        filename (str): path to the dataset (csv)
+
+    Returns:
+        (list): list of all rows with concatenated "{destination} {target} {code}"
+    """
     df = pd.read_csv(filename)
     df['code'] = df['code'].apply(lambda code: code.replace(" ", ""))
     sentences = []
     for _, row in df.iterrows():
         words = nltk.word_tokenize(
-            row['input']) + nltk.word_tokenize(row['target']) + nltk.word_tokenize(row['code'])
+            row['destination']) + nltk.word_tokenize(row['target']) + nltk.word_tokenize(row['code'])
         words = [re.sub("[^A-Za-z']+", ' ', str(word)).lower()
                  for word in words]
         sentences.append(words)
@@ -67,8 +83,15 @@ def get_sentences(filename):
 
 
 def get_train_test_split(filename):
+    """Split the dataset in train test data
+
+    Parameters:
+        filename (str): path to the data (csv)
+
+    Returns:
+        (df_train (DataFrame), df_test (DataFrame)): train and test datasets
+    """
     df = pd.read_csv(filename)
-    df['code'] = df['code'].apply(lambda code: code.replace(" ", ""))
 
     # shuffle
     df.sample(frac=1).reset_index(drop=True)
