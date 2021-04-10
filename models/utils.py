@@ -1,8 +1,10 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
+from typing import List, Dict
+import re
 
 
-def recall_at_k(k, preds, labels):
+def recall_at_k(k: int, preds: List[str], labels: List[str]) -> float:
     """Compute the recall at k score given a set of predicted labels and the true ones.
 
     Parameters:
@@ -26,8 +28,9 @@ def recall_at_k(k, preds, labels):
 
 
 class ANAISDataset(Dataset):
-    def __init__(self, df):
+    def __init__(self, df, transform):
         self.df = df
+        self.transform = transform
 
         self.destinations = self.df["destination"]
         self.labels = self.df["code"]
@@ -35,11 +38,14 @@ class ANAISDataset(Dataset):
     def __len__(self): return len(self.df)
 
     def __getitem__(self, idx):
-        return self.destinations[idx], self.labels[idx]
+        destination = self.destinations[idx]
+        if self.transform:
+            destination = self.transform(destination)
+        return destination, self.labels[idx]
 
 
-def get_loader(df, batch_size=10, num_workers=1, shuffle=True, pin_memory=True):
-    dataset = ANAISDataset(df)
+def get_loader(df, batch_size=10, num_workers=1, shuffle=True, pin_memory=True, transform=None):
+    dataset = ANAISDataset(df, transform=transform)
     loader = DataLoader(dataset=dataset, batch_size=batch_size, num_workers=num_workers,
                         shuffle=shuffle, pin_memory=pin_memory)
     return dataset, loader
@@ -81,3 +87,23 @@ def damerau_levenshtein_distance(s1, s2):
                 d[(i, j)] = min(d[(i, j)], d[i-2, j-2] + cost)
 
     return d[lenstr1-1, lenstr2-1]
+
+
+def regexp_processing(destination):
+    """ Removes noise from destination
+    FR LPE>NL RTM should return NLRTM
+    NL RTM/FR DON should return FRDON
+
+    Args:
+        destination (str): initial destination input
+
+    Returns:
+        str: processed destination to remove noisy characters
+    """
+    pattern = re.compile("[>]+")
+    matches = pattern.findall(destination)
+
+    if matches:
+        return destination.split(matches[-1])[-1].strip()
+    else:
+        return destination
