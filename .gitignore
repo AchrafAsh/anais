@@ -2,3 +2,4 @@
 resources/
 data/
 pretrained_w2v/
+*.pyc
