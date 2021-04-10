@@ -2,6 +2,7 @@ import nltk
 import re
 import nlpaug.augmenter.char as nac
 import pandas as pd
+from constants import constants
 
 
 def get_full_df(filename="./data/ais_data/nari_static.csv"):
@@ -82,7 +83,7 @@ def get_sentences(filename):
     return sentences
 
 
-def get_train_test_split(filename):
+def get_train_test_split(filename, transform=None):
     """Split the dataset in train test data
 
     Parameters:
@@ -93,8 +94,12 @@ def get_train_test_split(filename):
     """
     df = pd.read_csv(filename)
 
+    if transform:
+        df["destination"] = df.apply(
+            lambda x: transform(x["destination"]), axis=1)
+
     # shuffle
-    df.sample(frac=1).reset_index(drop=True)
+    df.sample(frac=1, random_state=constants["SEED"]).reset_index(drop=True)
 
     # split train / test
     split_idx = int(len(df) * 0.8)

@@ -1,0 +1,3 @@
+constants = {
+    "SEED": 42
+}
