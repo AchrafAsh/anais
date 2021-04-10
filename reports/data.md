@@ -1,6 +1,12 @@
-# Étude du jeux de données construit
+# Analyse des Données
 
-## Introduction
+- [Introduction](#introduction)
+- [Description](#description)
+- [Traitement](#traitement)
+    * [Expressions Régulières](#expressions-regulieres)
+
+
+# Introduction
 Pour pouvoir se décider sur une stratégie, il est nécessaire de comprendre notre jeux de données et s'assurer de son homogénéité.
 
 Notre problème est double:
@@ -9,7 +15,8 @@ Notre problème est double:
 
 Dans l'idéal, il nous faudrait donc une bonne diversité pour ces 2 aspects, i.e beaucoup de données qui recouvrent une sous-liste des *world port index*, et pour chaque *world port index* une répartition équitable entre les 4 catégories d'entrées.
 
-## Analyse des données
+
+# Description
 - Nous partons d'un jeux de données de **360 entrées**
 - Les données recouvrent **226 ports différents**
 
@@ -24,15 +31,23 @@ Dans l'idéal, il nous faudrait donc une bonne diversité pour ces 2 aspects, i.
 ![](histogram.png)
 
 Par exemple, les 9 entrées associées au port de Brest (FRBES) sont:
-- BREST
-- RADE DE BREST
-- BREST PILOT
-- BREST FRANCE
-- BREST, FRANCE
-- RADE BREST
-- BESFR
-- BRESTF.O.
-- BRESTFR
+```
+BREST
+RADE DE BREST
+BREST PILOT
+BREST FRANCE
+BREST, FRANCE
+RADE BREST
+BESFR
+BRESTF.O.
+BRESTFR
+```
 
 ## Conclusion
 Plutôt que de recouvrir 226 ports de manière superficielle, il serait beaucoup plus intéressant de se focaliser sur n ports (n à définir) et s'assurer d'avoir une diversité homogène dans les entrées associées (réparti entre les 4 catégories d'entrées possibles).
+
+
+# Traitement
+Toute inférence nécessite une part importante de traitement des données. Les données brutes contiennent beaucoup de bruit qu'il faut déterminer puis l'enlever.
+
+## Expressions Régulières
