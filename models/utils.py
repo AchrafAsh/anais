@@ -4,25 +4,41 @@ from typing import List, Dict
 import re
 
 
-def recall_at_k(k: int, preds: List[str], labels: List[str]) -> float:
+def best_k(k, data_dict):
+    """
+    Args: 
+        k (int): number of best elements to return
+        data_dict (dict): a dictionary with number values
+
+    Returns:
+        (list): list of tuples (label, value) sorted by decreasing values
+    """
+
+    data_list = list(data_dict.items())
+    data_list.sort(key=lambda x: x[1], reverse=True)
+
+    return data_list[:k]
+
+
+def recall_at_k(k: int, preds: List[Dict], targets: List[str]) -> float:
     """Compute the recall at k score given a set of predicted labels and the true ones.
 
-    Parameters:
+    Args:
         k (int): 
-        preds (tensor): predicted labels
-        labels (tensor): true labels
+        preds (dict): predicted labels
+        targets (list): true labels
 
     Returns:
         (float): Percentage of correct predicted labels
     """
 
-    assert len(preds) == len(labels)
+    assert len(preds) == len(targets)
     n = len(preds)
     corrects = 0
 
     for i in range(n):
-        if labels[i] in torch.topk(preds[i], k=k):
-            corrects += 1
+        output = best_k(k, preds[i])
+        if targets[i] in list(map(lambda x: x[0], output)): corrects += 1
 
     return corrects / n
 
@@ -66,6 +82,7 @@ def damerau_levenshtein_distance(s1, s2):
     d = {}
     lenstr1 = len(s1)
     lenstr2 = len(s2)
+    s1, s2 = s1.lower(), s2.lower()
     for i in range(-1, lenstr1+1):
         d[(i, -1)] = i+1
     for j in range(-1, lenstr2+1):
