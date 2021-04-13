@@ -1,6 +1,7 @@
 import nltk
 import re
 import nlpaug.augmenter.char as nac
+import numpy as np
 import pandas as pd
 from constants import constants
 
@@ -83,7 +84,7 @@ def get_sentences(filename):
     return sentences
 
 
-def get_train_test_split(filename, transform=None):
+def get_train_test_split(filename="10_ports.csv", transform=None):
     """Split the dataset in train test data
 
     Parameters:
@@ -99,7 +100,7 @@ def get_train_test_split(filename, transform=None):
             lambda x: transform(x["destination"]), axis=1)
 
     # shuffle
-    df.sample(frac=1, random_state=constants["SEED"]).reset_index(drop=True)
+    df = df.sample(frac=1, random_state=constants["SEED"])
 
     # split train / test
     split_idx = int(len(df) * 0.8)
@@ -107,3 +108,23 @@ def get_train_test_split(filename, transform=None):
     df_test = df.iloc[split_idx:]
 
     return df_train, df_test
+
+
+def regexp_processing(destination):
+    """ Removes noise from destination
+    FR LPE>NL RTM should return NLRTM
+    NL RTM/FR DON should return FRDON
+
+    Args:
+        destination (str): initial destination input
+
+    Returns:
+        str: processed destination to remove noisy characters
+    """
+    pattern = re.compile("[>]+")
+    matches = pattern.findall(destination)
+
+    if matches:
+        return destination.split(matches[-1])[-1].strip()
+    else:
+        return destination

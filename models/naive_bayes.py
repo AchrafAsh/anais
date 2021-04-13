@@ -1,7 +1,8 @@
 import string
 import numpy as np
 import pandas as pd
-from models.utils import damerau_levenshtein_distance, regexp_processing
+from distances import damerau_levenshtein_distance
+from data import regexp_processing
 from tqdm import tqdm
 from collections import Counter
 from itertools import product
@@ -30,6 +31,13 @@ class NaiveBayes:
         for label in classes:
             self.y_prob[label] = 0
 
+    @staticmethod
+    def softmax(x):
+        denominator = sum([np.exp(i) for i in x.values()])
+        for key, value in x.items():
+            x[key] = np.exp(value) / denominator
+        return x
+
     def fit(self, dataset):
         total_grams_per_class = {}
         for label in self.classes:
@@ -52,7 +60,15 @@ class NaiveBayes:
                 len(self.ngrams)
             self.y_prob[target] /= sum(self.y_prob.values())
 
-    def predict(self, text):
+    def __call__(self, text):
+        """
+        Args:
+            text (str)
+
+        Returns:
+            label (str): predicted label
+            pred_targets (dict): dictionary of all the possible labels with their probabilities
+        """
         pred_targets = {}
         for label in self.classes:
             pred_targets[label] = 1
@@ -64,7 +80,7 @@ class NaiveBayes:
                         self.probs.loc[idx, label]
 
         label = max(pred_targets, key=pred_targets.get)
-        return label, pred_targets
+        return label, self.softmax(pred_targets)
 
     def eval(self, dataset):
         correct = 0
@@ -73,7 +89,7 @@ class NaiveBayes:
         for idx in tqdm(range(len(dataset))):
             text = dataset.iloc[idx]["destination"]
             target = dataset.iloc[idx]["code"]
-            label, _ = model(text)
+            label, _ = self(text)
             if label == target:
                 correct += 1
             else:
@@ -82,5 +98,3 @@ class NaiveBayes:
         accuracy = correct / len(dataset)
         print(f"Accuracy: {accuracy} | Errors: {len(errors)}")
         return accuracy, errors
-
-    def __call__(self, text): return self.predict(text)

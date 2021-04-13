@@ -1,17 +1,20 @@
 import numpy as np
 import pandas as pd
-from models.utils import damerau_levenshtein_distance, regexp_processing
+from distances import damerau_levenshtein_distance
+from data import regexp_processing
 from tqdm import tqdm
 from collections import Counter
 
 
 class KNN:
+    """
+    K-nearest neigbours model.
+    Args:
+        k (int): number of nearst neighbours to consider
+        classes (list): list of output classes
+    """
+
     def __init__(self, k, classes):
-        """
-        Args:
-            k (int): number of nearst neighbours to consider
-            classes (list): list of output classes
-        """
         self.k = k
         self.destinations = {}
         self.classes = {label: 0 for label in classes}
@@ -36,7 +39,7 @@ class KNN:
         for i in tqdm(range(len(dataset))):
             text = dataset.iloc[i]["destination"]
             label = dataset.iloc[i]["code"]
-            pred, _, _ = self(text)
+            pred, _ = self(text)
             if pred == label:
                 correct += 1
             else:
@@ -79,7 +82,7 @@ class KNN:
 
         Returns:
             label(str): the predicted label
-            nearest_neighbours (list): list of k-nearest neighbours (from the training data)
+            classes (dict): list of possible labels with their probability
         """
 
         nearest_neighbours = []
@@ -98,4 +101,4 @@ class KNN:
         for label in self.classes.keys():
             self.classes[label] = label_counts[label]
 
-        return label_counts.most_common()[0][0], self.classes, nearest_neighbours
+        return label_counts.most_common()[0][0], self.classes
