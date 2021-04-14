@@ -3,6 +3,7 @@ import pandas as pd
 from data import get_train_test_split
 from models.knn import KNN
 from models.naive_bayes import NaiveBayes
+from models.linear import Linear
 
 
 class ModelTests(unittest.TestCase):
@@ -14,6 +15,9 @@ class ModelTests(unittest.TestCase):
 
         self.NaiveBayes = NaiveBayes(n=3, classes=self.classes)
         self.NaiveBayes.fit(self.train_df)
+
+        self.Linear = Linear(classes=self.classes, max_len=40)
+        self.Linear.fit(self.train_df, epochs=1)
 
     def test_knn_io(self):
         """
@@ -42,7 +46,8 @@ class ModelTests(unittest.TestCase):
         pred_lower, output_lower = self.KNN("brest")
 
         self.assertEqual(pred_upper, pred_lower)
-        self.assertListEqual(output_upper.items(), output_lower.items())
+        self.assertListEqual(list(output_upper.items()),
+                             list(output_lower.items()))
 
     def test_naive_bayes_io(self):
         """
@@ -54,6 +59,20 @@ class ModelTests(unittest.TestCase):
 
     def test_naive_bayes_output_probabilities(self):
         _, output = self.NaiveBayes("BREST")
+        self.assertLess(abs(sum(output.values()) - 1), 1e-3)
+        for label in self.classes:
+            self.assertIn(label, output.keys())
+
+    def test_linear_io(self):
+        """
+        Test that Naive Bayes model takes the right inputs and outputs a dictionary with all possible class
+        """
+        pred, output = self.Linear("BREST")
+        self.assertIn(pred, self.classes)
+        self.assertIsInstance(output, dict)
+
+    def test_linear_output_probabilities(self):
+        _, output = self.Linear("BREST")
         self.assertLess(abs(sum(output.values()) - 1), 1e-3)
         for label in self.classes:
             self.assertIn(label, output.keys())
