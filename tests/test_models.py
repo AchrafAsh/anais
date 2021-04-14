@@ -1,15 +1,18 @@
 import unittest
 import pandas as pd
-from data import get_train_test_split
+from src.data import get_train_test_split
+from src.constants import constants
 from models.knn import KNN
 from models.naive_bayes import NaiveBayes
 from models.linear import Linear
+from models.word2vec import W2V
 
 
 class ModelTests(unittest.TestCase):
     def setUp(self):
         self.train_df, self.test_df = get_train_test_split()
-        self.classes = self.train_df["code"].unique().tolist()
+        self.classes = constants["classes"]
+
         self.KNN = KNN(k=4, classes=self.classes)
         self.KNN.fit(self.train_df)
 
@@ -18,6 +21,8 @@ class ModelTests(unittest.TestCase):
 
         self.Linear = Linear(classes=self.classes, max_len=40)
         self.Linear.fit(self.train_df, epochs=1)
+
+        self.W2V = W2V(classes=self.classes)
 
     def test_knn_io(self):
         """
@@ -65,7 +70,7 @@ class ModelTests(unittest.TestCase):
 
     def test_linear_io(self):
         """
-        Test that Naive Bayes model takes the right inputs and outputs a dictionary with all possible class
+        Test that Linear model takes the right inputs and outputs a dictionary with all possible class
         """
         pred, output = self.Linear("BREST")
         self.assertIn(pred, self.classes)
@@ -73,6 +78,20 @@ class ModelTests(unittest.TestCase):
 
     def test_linear_output_probabilities(self):
         _, output = self.Linear("BREST")
+        self.assertLess(abs(sum(output.values()) - 1), 1e-3)
+        for label in self.classes:
+            self.assertIn(label, output.keys())
+
+    def test_w2v_io(self):
+        """
+        Test that Word2Vec model takes the right inputs and outputs a dictionary with all possible class
+        """
+        pred, output = self.W2V("BREST")
+        self.assertIn(pred, self.classes)
+        self.assertIsInstance(output, dict)
+
+    def test_w2v_output_probabilities(self):
+        _, output = self.W2V("BREST")
         self.assertLess(abs(sum(output.values()) - 1), 1e-3)
         for label in self.classes:
             self.assertIn(label, output.keys())
