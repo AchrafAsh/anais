@@ -1,8 +1,8 @@
 import string
 import numpy as np
 import pandas as pd
-from distances import damerau_levenshtein_distance
-from data import regexp_processing
+from src.distances import damerau_levenshtein_distance
+from src.data import regexp_processing
 from tqdm import tqdm
 from collections import Counter
 from itertools import product

@@ -1,6 +1,6 @@
 import string
 import numpy as np
-from data import get_train_test_split
+from src.data import get_train_test_split
 from tqdm import tqdm
 import seaborn as sns
 import matplotlib.pyplot as plt

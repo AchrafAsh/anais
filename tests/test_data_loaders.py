@@ -1,6 +1,6 @@
 import unittest
 import pandas as pd
-from data import get_train_test_split
+from src.data import get_train_test_split
 
 
 class TestDataLoaders(unittest.TestCase):

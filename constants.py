@@ -1,3 +1,0 @@
-constants = {
-    "SEED": 42
-}

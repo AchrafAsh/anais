@@ -1,6 +1,6 @@
 import unittest
 
-from distances import damerau_levenshtein_distance
+from src.distances import damerau_levenshtein_distance
 
 
 class TestDistances(unittest.TestCase):

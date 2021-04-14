@@ -3,7 +3,7 @@ import re
 import nlpaug.augmenter.char as nac
 import numpy as np
 import pandas as pd
-from constants import constants
+from src.constants import constants
 
 
 def get_full_df(filename="./data/ais_data/nari_static.csv"):
