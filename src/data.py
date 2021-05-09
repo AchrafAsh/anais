@@ -64,7 +64,7 @@ def word_augmentation(df, n):
     return df.append(aug_df)
 
 
-def get_sentences(filename):
+def get_sentences(filename="data/clean_dataset.csv"):
     """
     Parameters:
         filename (str): path to the dataset (csv)
