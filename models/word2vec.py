@@ -21,10 +21,10 @@ class W2V:
             x[key] = np.exp(value) / denominator
         return x
 
-    def fit(self, sentences):
+    def fit(self, sentences, epochs=300):
         self.model.build_vocab(sentences)
         self.model.train(sentences, total_examples=self.model.corpus_count,
-                         epochs=300, report_delay=1)
+                         epochs=epochs, report_delay=1)
 
     def __call__(self, text):
         text = text.lower()
@@ -41,9 +41,8 @@ class W2V:
             sims = self.model.most_similar(
                 known_words, topn=10)  # [(str, distance)]
 
-        labels = {}
-        for label in self.classes:
-            labels[label] = 0
+        labels = {label: 0 for label in self.classes}
+
         for i in range(len(sims)):
             if sims[i][0].upper() in self.classes:
                 labels[sims[i][0].upper()] += 1
