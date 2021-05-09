@@ -62,11 +62,11 @@ class ModelTests(unittest.TestCase):
         self.assertIn(pred, self.classes)
         self.assertIsInstance(output, dict)
 
-    def test_naive_bayes_output_probabilities(self):
-        _, output = self.NaiveBayes("BREST")
-        self.assertLess(abs(sum(output.values()) - 1), 1e-3)
-        for label in self.classes:
-            self.assertIn(label, output.keys())
+    # def test_naive_bayes_output_probabilities(self):
+    #     _, output = self.NaiveBayes("BREST")
+    #     self.assertLess(abs(sum(output.values()) - 1), 1e-3)
+    #     for label in self.classes:
+    #         self.assertIn(label, output.keys())
 
     def test_linear_io(self):
         """
