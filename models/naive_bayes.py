@@ -27,9 +27,7 @@ class NaiveBayes:
         self.probs = pd.DataFrame(1, index=np.arange(
             len(self.ngrams)).tolist(), columns=classes)
         self.classes = classes
-        self.y_prob = {}
-        for label in classes:
-            self.y_prob[label] = 0
+        self.y_prob = {label: 0 for label in self.classes}
 
     @staticmethod
     def softmax(x):
@@ -39,24 +37,22 @@ class NaiveBayes:
         return x
 
     def fit(self, dataset):
-        total_grams_per_class = {}
-        for label in self.classes:
-            total_grams_per_class[label] = 0
+        total_grams_per_class = {label: 0 for label in self.classes}
 
         for idx in tqdm(range(len(dataset))):
             text = dataset.iloc[idx]["destination"]
             target = dataset.iloc[idx]["code"]
 
             self.y_prob[target] += 1
-            total_grams_per_class[target] += 1
 
             for idx in range(len(self.ngrams)):
                 if self.ngrams[idx] in text.lower():
+                    total_grams_per_class[target] += 1
                     self.probs.loc[idx, target] += 1
 
         # divide by the total number of word for each column
         for target in self.classes:
-            self.probs[target] /= total_grams_per_class[target] * \
+            self.probs[target] /= total_grams_per_class[target] + \
                 len(self.ngrams)
             self.y_prob[target] /= sum(self.y_prob.values())
 
