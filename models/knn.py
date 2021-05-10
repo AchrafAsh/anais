@@ -14,24 +14,24 @@ class KNN:
         classes (list): list of output classes
     """
 
-    def __init__(self, k, classes):
+    def __init__(self, k: int, classes: list[str]):
         self.k = k
         self.destinations = {}
         self.classes = {label: 0 for label in classes}
 
-    def fit(self, dataset):
+    def fit(self, dataset: pd.DataFrame):
         for i in range(len(dataset)):
             self.destinations[dataset.iloc[i]
                               ["destination"]] = dataset.iloc[i]["code"]
 
-    def eval(self, dataset):
+    def eval(self, dataset: pd.DataFrame) -> float:
         """Evaluates the model on dataset
 
         Args:
-            dataset (DataFrame): needs to have columns "destination" and "code" (i.e label)
+            dataset - needs to have columns "destination" and "code" (i.e label)
 
         Returns:
-            accuracy (float): the percentage of correct labels
+            accuracy - the percentage of correct labels
         """
 
         correct = 0
@@ -48,11 +48,11 @@ class KNN:
         return correct / len(dataset), false_preds
 
     @staticmethod
-    def max_distance(text, elements):
+    def max_distance(text: str, elements: (str, str)) -> int:
         """Find the farthest element and returns its index
         Args:
-            text (str): text to consider
-            elements (double<str>): (destination, label)
+            text - text to consider
+            elements - (destination, label)
 
         Returns:
             int: index of the farthest element
@@ -67,14 +67,14 @@ class KNN:
         return max_idx
 
     @staticmethod
-    def alt_softmax(counter):
+    def alt_softmax(counter: Counter) -> Counter:
         denominator = sum([np.exp(y)*y for y in counter.values()])
         for key in counter.keys():
             counter[key] = np.exp(counter[key])*counter[key] / denominator
 
         return counter
 
-    def __call__(self, text):
+    def __call__(self, text: str) -> (str, dict[str, float]):
         """Classify text with the most common label amongst k-nearest neighbours
 
         Args:

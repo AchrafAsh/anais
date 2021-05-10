@@ -15,7 +15,7 @@ class Linear:
         vocab_size (int): number of characters in the vocabulary
     """
 
-    def __init__(self, classes, max_len):
+    def __init__(self, classes: list[str], max_len: int = 50):
         self.classes = classes
         self.vocab = self.build_vocab()
         self.max_len = max_len
@@ -32,7 +32,7 @@ class Linear:
             idx += 1
         return vocab
 
-    def encode(self, text):
+    def encode(self, text: str) -> np.ndarray:
         """
         Return a one hot encoded vector along one dimension (all characters are concatenated)
         """
@@ -52,7 +52,7 @@ class Linear:
                 token = np.concatenate((token, one_hot_encoded_vector), axis=0)
         return token
 
-    def __call__(self, text):
+    def __call__(self, text: str) -> (str, dict[str, float]):
         x = self.encode(text)
         preds = np.dot(self.w, x) + self.b
         preds = preds.flatten()
@@ -64,11 +64,12 @@ class Linear:
         return self.classes[idx_pred_max], labels
 
     @staticmethod
-    def softmax(array):
+    def softmax(array: np.ndarray) -> np.ndarray:
         denominator = sum([np.exp(i) for i in array])
         return [np.exp(i) / denominator for i in array]
 
-    def fit(self, dataset, epochs=1, batch_size=1, lr=0.1):
+    def fit(self, dataset: pd.DataFrame, epochs: int = 1,
+            batch_size: int = 1, lr: float = 0.1) -> (list[float], list[float]):
         """
         Implement stochastic gradient descent to estimate w and b parameters
         Args:
@@ -112,7 +113,7 @@ class Linear:
 
         return losses, accuracies
 
-    def eval(self, dataset):
+    def eval(self, dataset: pd.DataFrame) -> (float, list[string]):
         corrects = 0
         errors = []
 
