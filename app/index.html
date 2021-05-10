@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <title>ANAIS x ENSTA - PIE</title>
+</head>
+<body>
+    <header class="w-full p-6 max-w-5xl mx-auto flex flex-row justify-end">
+        <ul class="flex flex-row space-x-6">
+            <li>About</li>
+            <li>Documentation</li>
+        </ul>
+    </header>
+
+    <main class="mt-24 max-w-5xl mx-auto flex flex-col items-center justify-center">
+    <h1 class="my-12 text-4xl font-medium">ANAIS</h1>
+    <form id="form">
+        <input type="text" name="destination" id="destination" placeholder="Entrez une destination" class="py-2 px-6 border rounded">
+        <input type="submit" value="Valider" class="cursor-pointer px-6 py-2 rounded">
+    </form>
+    <div id="result_card" class="my-12 py-2 px-6 bg-blue-100 rounded text-xl font-medium"></div>
+    </main>
+        
+    <script>
+        async function handleSubmit(e) {
+            e.preventDefault()
+            destination = document.getElementById('destination').value
+            
+            const response = await fetch('http://localhost:5000/predict', {
+                method: 'POST',
+                body: destination
+            })
+
+            const label = await response.text()
+            
+            document.getElementById('result_card').innerText = label
+        }
+
+        document.getElementById("form").onsubmit = handleSubmit
+    </script>
+
+</body>
+</html>
