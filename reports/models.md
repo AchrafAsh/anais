@@ -8,45 +8,46 @@
     * [Les plus proches voisins (KNN)](#les-plus-proches-voisins-knn)
     * [Naive Bayes et n-grammes](#naive-bayes-et-n-grammes)
 
+## Table d'expérimentation
+![](experiment_table.png)
+
 ## Problème
 
-Nous sommes face à un problème de classification (la classe est le world port index, e.g. FRBES pour Brest) dans le domaine plus large du NLP (Natural Language Processing).
+Nous sommes face à un problème de classification (la classe est le *world port index*, par exemple **FRBES** pour **Brest**) avec des données textuelles.
 
-Tous les modèles d'apprentissage prennent uniquement des données numériques en entrée, il est donc nécessaire d'encoder nos entrées, i.e définir une représentation numérique d'une chaîne de caractères.
+En général, les modèles d'apprentissage prennent uniquement des données numériques en entrée. Il est donc nécessaire d'*encoder* nos entrées textuelles, i.e définir une représentation numérique d'une chaîne de caractères.
 
-Les méthodes utilisés sont fondés sur le même principe de vocabulaire. Un vocabulaire est une manière d'associer une chaîne de caractère à un entier (un indice), en général de manière incrémentale. Les 2 méthodes sont:
-- à chaque mot on associe un entier (ex: Brest <-> 1, France <-> 2, etc)
-- à chaque lettre on associe un entier (ex: a <-> 1, b <-> 2, etc)
+Nous utilisons ici le principe de *vocabulaire*. Un *vocabulaire* est une manière d'associer une chaîne de caractère à un entier (un indice), en général de manière incrémentale. Nous avons le choix entre 2 méthodes:
+- à chaque mot est associé un entier (ex: `Brest = 1`, `France = 2`, etc)
+- à chaque lettre est associé un entier (ex: `a = 1`, `b = 2`, etc)
 
 
 ## Modèles
-Pour chacun des modèles implémentés, nous verrons l'optimisation des paramètres, la performance etc
+Pour chacun des modèles implémentés, nous verrons l'optimisation des paramètres, la performance, les avantages et les inconvénients.
 
 #### Mesure de Performance
 
-Notre métrique de précision pour évaluer les différents modèles est le **Recall @k**.
-Nos modèles retournent la liste des classes possibles, avec pour chaque une valeur qui correspond à la probabilité que cette classe soit la bonne:
+La métrique choisis pour comparer et évaluer les différents modèles est le **Recall @k**.
+Étant donné une entrée (par exemple Brest), nos modèles retournent la liste complète des classes possibles avec une valeur qui correspond à la probabilité que cette classe soit la bonne:
 
-$${
-    FRBES: 0.1,
-    NLRTM: 0.2,
-    FRBOD: 0.7
-}$$
+$$\{
+    FRBES: 0.7,
+    NLRTM: 0.09,
+    FRBOD: 0.12,
+    ...
+\}$$
 
-Le **Recall @1** consiste à regarder si la classe avec la plus grande valeur correspond à la bonne classe et sommer les bonnes réponses:
+Le **recall @1** consiste à regarder si la classe avec la plus grande valeur correspond effectivement à la bonne classe, puis comptabiliser les bonnes réponses:
 
-$$ \frac{nombre \, de \, correctes}{nombre \, de \, données} $$
+$$ recall@1 = \frac{nombre \, de \, correctes}{nombre \, de \, données} $$
 
-Le **Recall @2** consiste à regarder si la bonne classe est parmi les 2 classes avec les plus grandes valeurs.
+Le **recall @2** consiste à regarder si le bon port est parmi les 2 classes qui possèdent les plus grandes valeurs.
 
-Enfin, le **recall @3** consiste à regarder si la bonne classe est parmi les 3 plus grandes valeurs.
+Enfin, le **recall @3** consiste à regarder si le bon port est parmi les 3 classes qui possèdent les plus grandes valeurs.
 
 #### Word2Vec
 
-Ici nous utilisons un encodage avec un vocabulaire construit avec une liste de mots rencontrés dans le jeux de données d'entrainement.
-
-
-##### Résultats
+Ici nous utilisons un encodage dont le vocabulaire est construit avec une liste de mots rencontrés dans le jeux de données d'entraînement.
 
 ##### Augmentation des données: KeyAug
 
@@ -63,11 +64,17 @@ Nos prochaines méthodes feront donc usage d'un vocabulaire constitué de caract
 
 #### Régression Logistique
 
+##### Hyperparamètres
+
+![](hyperparameter_logistic.png)
+
+Choix:
+- epochs: 10
+- learning rate: 0.1
 ##### Résultats
-
-##### Avantages
-
-##### Inconvénients
+- Recall@1: 0.76
+- Recall@2: 0.8
+- Recall@3: 0.82
 
 #### Les plus proches voisins (KNN)
 
@@ -75,14 +82,19 @@ Nos prochaines méthodes feront donc usage d'un vocabulaire constitué de caract
 - Entrainement: sauvegarder le jeux de données d'entrainement
 - Prédiction: trouver les k plus proches voisins (parmi les données labellisées sauvegardées) de l'entrée. Nous attribuons la classe la plus présente parmi les voisins.
 
+##### Paramètres
+![](hyperparameter_knn.png)
+
+On choisis donc `k=4` plus proches voisins.
+
 ##### Résultats
-
-##### Avantages
-
-##### Inconvénients
+- Recall@1: 0.8
+- Recall@2: 0.9
+- Recall@3: 0.94
 
 
 #### Naive Bayes et n-grammes
+
 
 Un n-gram est simplement une manière de glisser une fenêtre de taille fixée pour extraire une sous-chaîne de caractères:
 
@@ -124,6 +136,16 @@ $$
 
 Pour résoudre ce problème, nous utilisons *le lissage de Laplace* qui consiste à initier toutes les probabilités de $X$ à 1.
 
-##### Avantages
 
-##### Inconvénients
+#### Paramètres
+
+![](hyperparameter_naive_bayes.png)
+
+On choisis donc d'utiliser des **ngrams de taille 2**.
+
+#### Résultats
+*Les valeurs sont érronées. On voit sur le graphique en haut que Recall@1 devrait être égal à 0.5.*
+
+- Recall@1: 0.24
+- Recall@2: 0.26
+- Recall@3: 0.42
