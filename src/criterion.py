@@ -21,9 +21,9 @@ def recall_at_k(k: int, preds: List[Dict], targets: List[str]) -> float:
     """Compute the recall at k score given a set of predicted labels and the true ones.
 
     Args:
-        k (int): 
-        preds (dict): predicted labels
-        targets (list): true labels
+        k (int)
+        preds (dict) - predicted labels
+        targets (list) - true labels
 
     Returns:
         (float): Percentage of correct predicted labels
@@ -38,3 +38,24 @@ def recall_at_k(k: int, preds: List[Dict], targets: List[str]) -> float:
         if targets[i] in list(map(lambda x: x[0], output)): corrects += 1
 
     return corrects / n
+
+
+def get_recall(model, dataset):
+    '''
+
+    Args:
+        model - model to evaluate
+        dataset - pandas DataFrame with columns 'code' and 'destination'
+    Returns:
+        (tuple) - recall@1,2,3
+    '''
+    preds = []
+    targets = []
+    for i in range(len(dataset)):
+        text = dataset.iloc[i]["destination"]
+        target = dataset.iloc[i]["code"]
+        _, pred = model(text)
+        preds.append(dict(pred))
+        targets.append(target)
+
+    return recall_at_k(1, preds, targets), recall_at_k(2, preds, targets), recall_at_k(3, preds, targets)

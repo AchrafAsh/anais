@@ -1,12 +1,14 @@
-import nltk
-import re
 import nlpaug.augmenter.char as nac
+import nltk
 import numpy as np
 import pandas as pd
+import re
+
 from src.constants import constants
+from typing import Callable
 
 
-def get_full_df(filename="./data/ais_data/nari_static.csv"):
+def get_full_df(filename: str = "./data/ais_data/nari_static.csv"):
     types = {
         "sourcemmsi": "Int64",
         "imo": "Int64",
@@ -41,10 +43,10 @@ def get_full_df(filename="./data/ais_data/nari_static.csv"):
     unique_df = unique_df[["destination"]]
 
 
-def word_augmentation(df, n):
+def word_augmentation(df: pd.DataFrame, n: int):
     """Perform data augmentation with KeyboardAug, by inserting random keyboard inputs
 
-    Parameters:
+    Args:
         df (DataFrame): dataset
         n (int): number of insertions for each row -> change to probability to insert one
 
@@ -64,13 +66,13 @@ def word_augmentation(df, n):
     return df.append(aug_df)
 
 
-def get_sentences(filename="data/clean_dataset.csv"):
+def get_sentences(filename: str = "data/clean_dataset.csv"):
     """
-    Parameters:
+    Args:
         filename (str): path to the dataset (csv)
 
     Returns:
-        (list): list of all rows with concatenated "{destination} {target} {code}"
+        a list of all rows with concatenated "{destination} {target} {code}"
     """
     df = pd.read_csv(filename)
     df['code'] = df['code'].apply(lambda code: code.replace(" ", ""))
@@ -84,10 +86,10 @@ def get_sentences(filename="data/clean_dataset.csv"):
     return sentences
 
 
-def get_train_test_split(filename="10_ports.csv", transform=None):
+def get_train_test_split(filename: str = "10_ports.csv", split: float = 0.8, transform: Callable = None):
     """Split the dataset in train test data
 
-    Parameters:
+    Args:
         filename (str): path to the data (csv)
 
     Returns:
@@ -103,14 +105,14 @@ def get_train_test_split(filename="10_ports.csv", transform=None):
     df = df.sample(frac=1, random_state=constants["SEED"])
 
     # split train / test
-    split_idx = int(len(df) * 0.8)
+    split_idx = int(len(df) * split)
     df_train = df.iloc[:split_idx]
     df_test = df.iloc[split_idx:]
 
     return df_train, df_test
 
 
-def regexp_processing(destination):
+def regexp_processing(destination: str):
     """ Removes noise from destination
     FR LPE>NL RTM should return NLRTM
     NL RTM/FR DON should return FRDON
