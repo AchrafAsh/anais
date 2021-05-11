@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request
 from flask_cors import CORS
 from models.knn import KNN
 from src.constants import constants
