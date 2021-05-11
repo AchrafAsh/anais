@@ -1,7 +1,7 @@
-from typing import List, Dict
+import pandas as pd
 
 
-def best_k(k, data_dict):
+def best_k(k: int, data_dict: 'list[tuple[str, float]]') -> 'list[tuple[str, float]]':
     """
     Args: 
         k (int): number of best elements to return
@@ -17,7 +17,7 @@ def best_k(k, data_dict):
     return data_list[:k]
 
 
-def recall_at_k(k: int, preds: List[Dict], targets: List[str]) -> float:
+def recall_at_k(k: int, preds: 'list[dict[str, float]]', targets: 'list[str]') -> float:
     """Compute the recall at k score given a set of predicted labels and the true ones.
 
     Args:
@@ -40,9 +40,8 @@ def recall_at_k(k: int, preds: List[Dict], targets: List[str]) -> float:
     return corrects / n
 
 
-def get_recall(model, dataset):
+def get_recall(model, dataset: pd.DataFrame) -> 'tuple[float, float, float]':
     '''
-
     Args:
         model - model to evaluate
         dataset - pandas DataFrame with columns 'code' and 'destination'

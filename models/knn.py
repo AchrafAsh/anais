@@ -14,7 +14,7 @@ class KNN:
         classes (list): list of output classes
     """
 
-    def __init__(self, k: int, classes: list[str]):
+    def __init__(self, k: int, classes) -> None:
         self.k = k
         self.destinations = {}
         self.classes = {label: 0 for label in classes}
@@ -48,7 +48,7 @@ class KNN:
         return correct / len(dataset), false_preds
 
     @staticmethod
-    def max_distance(text: str, elements: (str, str)) -> int:
+    def max_distance(text: str, elements: 'tuple[str, str]') -> int:
         """Find the farthest element and returns its index
         Args:
             text - text to consider
@@ -74,8 +74,8 @@ class KNN:
 
         return counter
 
-    def __call__(self, text: str) -> (str, dict[str, float]):
-        """Classify text with the most common label amongst k-nearest neighbours
+    def __call__(self, text: str) -> 'tuple[str, dict[str, float]]':
+        '''Classify text with the most common label amongst k-nearest neighbours
 
         Args:
             text (str): text to label
@@ -83,7 +83,7 @@ class KNN:
         Returns:
             label(str): the predicted label
             classes (dict): list of possible labels with their probability
-        """
+        '''
 
         nearest_neighbours = []
         for destination, label in self.destinations.items():

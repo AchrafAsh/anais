@@ -15,7 +15,7 @@ app = Flask(__name__)
 CORS(app)
 
 
-@ app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['POST'])
 def predict():
     if request.method == "POST":
         destination = request.data.decode('utf-8')

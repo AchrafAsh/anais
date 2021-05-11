@@ -8,7 +8,7 @@ from collections import Counter
 from itertools import product
 
 
-def create_ngram(n: int = 2) -> list[str]:
+def create_ngram(n: int = 2) -> 'list[str]':
     combs = product(string.ascii_lowercase, repeat=n)
     ngrams = []
     for el in combs:
@@ -18,7 +18,7 @@ def create_ngram(n: int = 2) -> list[str]:
 
 
 class NaiveBayes:
-    def __init__(self, n: int, classes: list[str]):
+    def __init__(self, n: int, classes: 'list[str]'):
         """
         Args:
             n (int)
@@ -56,7 +56,7 @@ class NaiveBayes:
                 len(self.ngrams)
             self.y_prob[target] /= sum(self.y_prob.values())
 
-    def __call__(self, text: str) -> (str, dict[str, float]):
+    def __call__(self, text: str) -> 'tuple[str, dict[str, float]]':
         """
         Args:
             text (str)
@@ -78,7 +78,7 @@ class NaiveBayes:
         label = max(pred_targets, key=pred_targets.get)
         return label, self.softmax(pred_targets)
 
-    def eval(self, dataset: pd.DataFrame) -> (float, list[str]):
+    def eval(self, dataset: pd.DataFrame) -> 'tuple[float, list[str]]':
         correct = 0
         errors = []
 

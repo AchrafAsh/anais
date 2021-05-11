@@ -1,9 +1,11 @@
-import string
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import seaborn as sns
+import string
+
 from src.data import get_train_test_split
 from tqdm import tqdm
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 
 class Linear:
@@ -15,7 +17,7 @@ class Linear:
         vocab_size (int): number of characters in the vocabulary
     """
 
-    def __init__(self, classes: list[str], max_len: int = 50):
+    def __init__(self, classes: 'list[str]', max_len: int = 50) -> None:
         self.classes = classes
         self.vocab = self.build_vocab()
         self.max_len = max_len
@@ -52,7 +54,7 @@ class Linear:
                 token = np.concatenate((token, one_hot_encoded_vector), axis=0)
         return token
 
-    def __call__(self, text: str) -> (str, dict[str, float]):
+    def __call__(self, text: str) -> 'tuple[str, dict[str, float]]':
         x = self.encode(text)
         preds = np.dot(self.w, x) + self.b
         preds = preds.flatten()
@@ -69,7 +71,7 @@ class Linear:
         return [np.exp(i) / denominator for i in array]
 
     def fit(self, dataset: pd.DataFrame, epochs: int = 1,
-            batch_size: int = 1, lr: float = 0.1) -> (list[float], list[float]):
+            batch_size: int = 1, lr: float = 0.1) -> 'tuple[list[float], list[float]]':
         """
         Implement stochastic gradient descent to estimate w and b parameters
         Args:
@@ -113,7 +115,7 @@ class Linear:
 
         return losses, accuracies
 
-    def eval(self, dataset: pd.DataFrame) -> (float, list[string]):
+    def eval(self, dataset: pd.DataFrame) -> 'tuple[float, list[str]]':
         corrects = 0
         errors = []
 
@@ -133,6 +135,7 @@ class Linear:
 if __name__ == "__main__":
     train, test = get_train_test_split()
     classes = train["code"].unique().tolist()
+    epochs = 10
 
     model = Linear(classes=classes, max_len=40)
 
