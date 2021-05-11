@@ -1,5 +1,3 @@
-import nlpaug.augmenter.char as nac
-import nltk
 import numpy as np
 import pandas as pd
 import re
@@ -41,49 +39,6 @@ def get_full_df(filename: str = "./data/ais_data/nari_static.csv"):
     unique_df = dataset.loc[dataset["destination"].drop_duplicates(
     ).index.tolist()]
     unique_df = unique_df[["destination"]]
-
-
-def word_augmentation(df: pd.DataFrame, n: int):
-    """Perform data augmentation with KeyboardAug, by inserting random keyboard inputs
-
-    Args:
-        df (DataFrame): dataset
-        n (int): number of insertions for each row -> change to probability to insert one
-
-    Returns:
-        (DataFrame): the updated dataset with new rows
-    """
-    aug = nac.KeyboardAug()
-    aug_df = pd.DataFrame(columns=['input', 'target', 'code'])
-
-    for i in range(len(df)):
-        words = df.iloc[i]
-        for j in range(n):
-            augmented_data = aug.augment(words["input"])
-            aug_df = aug_df.append(
-                {"input": augmented_data, "target": words["target"], "code": words["code"]}, ignore_index=True)
-
-    return df.append(aug_df)
-
-
-def get_sentences(filename: str = "data/clean_dataset.csv"):
-    """
-    Args:
-        filename (str): path to the dataset (csv)
-
-    Returns:
-        a list of all rows with concatenated "{destination} {target} {code}"
-    """
-    df = pd.read_csv(filename)
-    df['code'] = df['code'].apply(lambda code: code.replace(" ", ""))
-    sentences = []
-    for _, row in df.iterrows():
-        words = nltk.word_tokenize(
-            row['destination']) + nltk.word_tokenize(row['target']) + nltk.word_tokenize(row['code'])
-        words = [re.sub("[^A-Za-z']+", ' ', str(word)).lower()
-                 for word in words]
-        sentences.append(words)
-    return sentences
 
 
 def get_train_test_split(filename: str = "10_ports.csv", split: float = 0.8, transform: Callable = None):
