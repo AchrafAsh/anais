@@ -15,6 +15,11 @@ app = Flask(__name__)
 CORS(app)
 
 
+@app.route('/', methods=['GET'])
+def welcome():
+    return 'Welcome to ANAIS - ENSTA web app'
+
+
 @app.route('/predict', methods=['POST'])
 def predict():
     if request.method == "POST":
