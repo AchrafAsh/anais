@@ -43,27 +43,33 @@
         <div id="result" class="flex flex-col items-center" style="display: none">
             <div id="label" class="my-12 py-2 px-6 bg-blue-100 rounded text-xl font-medium"></div>
             <div id='rate' class="flex flex-row justify-center items-center space-x-4">
-                <button>
+                <button onclick="handleRating(1)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
                     </svg>
                 </button>
-                <button>
+                <button onclick="handleRating(0)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" ></path>
                     </svg>
                 </button>
+                <div class="py-4 text-sm text-center max-w-sm text-gray-400">Aidez nous à améliorer notre solution en évaluant le résultat</div>
             </div>
-            <div class="py-4 text-sm text-center max-w-sm text-gray-400">Aidez nous à améliorer notre solution en évaluant le résultat</div>
+            <div id="rate_thank" style='display: none;'>
+                <div class="py-4 text-sm text-center max-w-sm text-gray-400">Merci beaucoup pour votre aide!</div>
+            </div>
         </div>
 
     </main>
         
     <script>
-        // const API_URI = "https://ec2-18-223-123-221.us-east-2.compute.amazonaws.com"
-        const API_URI = "https://anais-ensta.herokuapp.com"
+        // const API_URI = "https://anais.gestapo.cam"
+        const API_URI = "http://localhost:5000"
+        window.PRED_ID;
+        
         async function handleSubmit(e) {
             e.preventDefault()
+            resetElements()
             toggleSpinner(true)
             destination = document.getElementById('destination').value
             
@@ -72,10 +78,14 @@
                 body: destination
             })
 
-            const label = await response.text()
+            const {id, label} = await response.json()
+            PRED_ID = id
             
             document.getElementById('label').innerText = label
             document.getElementById('result').style.display = ''
+            if (PRED_ID == -1) {
+                document.getElementById('rate').style.display = 'none'
+            }
             toggleSpinner(false)
         }
 
@@ -89,8 +99,24 @@
             
             fetch(`${API_URI}/rate`, {
                 method: 'POST',
-                body: JSON.stringify({ rate, label, destination })
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id:PRED_ID, rate })
             })
+            .then(() => {
+                document.getElementById('rate').style.display = 'none'
+                document.getElementById('rate_thank').style.display = ''
+            })
+
+
+        }
+
+        function resetElements() {
+            document.getElementById('result').style.display = 'none'
+            document.getElementById('rate').style.display = ''
+            document.getElementById('rate_thank').style.display = 'none'
+            document.getElementById('spinner').style.display = 'none'
         }
 
         document.getElementById("form").onsubmit = handleSubmit
